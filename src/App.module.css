@@ -1,0 +1,35 @@
+
+*{
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    color: #fff;
+}
+
+
+.Title{
+    margin-bottom: 5rem;
+    font-size: 4rem;
+    font-weight: bold;
+}
+
+.Formulario{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+
+.label{
+    display: block;
+    margin-bottom: 1.5vh;
+
+    font-size: 5vh;
+    font-weight: 400;
+}
+
+
+
+
+
+

@@ -1,0 +1,30 @@
+.searchButton{
+    width: 10rem;
+    padding: .5rem;
+    
+    font-family: fantasy;
+    font-size: 1.4rem;
+    font-weight: 400;
+    letter-spacing: .1rem;
+    
+    border-radius: .7rem;
+    border-color: rgb(25, 38, 85);
+
+    box-shadow: .2rem .2rem .5rem #000;
+
+    background-color: rgb(31, 62, 141);
+    color: #fff;
+
+    transition: all .5s;
+}
+
+.searchButton:hover{
+    transform: translate(.1rem, .1rem);
+    box-shadow:  .3rem .3rem rgb(5, 12, 34), .6rem .6rem rgb(2, 6, 17);
+}
+
+.searchButton:active{
+    transition: .4ms;
+    transform: translate(.5rem, .5rem);
+    box-shadow: none;
+}

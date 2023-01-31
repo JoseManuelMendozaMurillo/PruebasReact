@@ -1,0 +1,84 @@
+:root{
+    --color-valido: #32DB0C; 
+    --color-invalido: #bc2121; 
+    --color-secundario: #736d62;
+}
+
+.container{
+    position: relative;
+}
+
+.inputs{
+    width: 100%;
+    padding: 1vh 6vh 1vh 5.5vh;
+
+    font-size: 3vh;
+
+    background-color: rgb(33, 33, 33);
+    border: 0.33vh solid transparent;
+    border-radius: 1.3vh;
+    outline: none;
+
+    z-index: 0;
+}
+
+.inputs:focus{
+    border: 0.33vh solid #fff;
+    box-shadow: 0.1vh 0.1vh 2vh rgba(255, 255, 255, 0.4),
+                -0.1vh -0.1vh 2vh rgba(255, 255, 255, 0.4);
+}
+
+
+.valid{
+    border: 0.33vh solid transparent;
+}
+
+.valid:focus{
+    border: 0.33vh solid var(--color-valido);
+    box-shadow: 0.1vh 0.1vh 2vh rgba(50, 219, 12, 0.4),
+    -0.1vh -0.1vh 2vh rgba(50, 219, 12, 0.4);
+}
+
+.invalid{
+    border-color: var(--color-invalido);
+}
+
+.invalid:focus{
+    border: 0.33vh solid var(--color-invalido);
+    box-shadow: 0.1vh 0.1vh 2vh rgba(188, 33, 33, 0.4),
+    -0.1vh -0.1vh 2vh rgba(188, 33, 33, 0.4);
+}
+
+.icon{
+    position: absolute;
+    
+    width: 7%;
+    height: fit-content;
+    z-index: 1;
+}
+
+.iconHelp{
+    bottom: 1.6vh;
+    left: 1.4vh;
+    fill: var(--color-secundario);
+}
+
+.inputs:focus + label .iconHelp{
+    fill: #fff;
+}
+
+.iconFeedback{
+    bottom: 1.6vh;
+    left: 37vh;
+    display: none;
+}
+
+.iconSuccess{
+    fill: var(--color-valido);
+    display: block;
+}
+
+.iconError{
+    fill: var(--color-invalido);
+    display: block;
+}
