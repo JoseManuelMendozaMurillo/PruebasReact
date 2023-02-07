@@ -1,15 +1,19 @@
 import PropTypes from "prop-types";
+import { useEffect, useRef } from "react";
 import styles from "./InputText.module.css";
 
 const InputText = ({
+	state,
+	setState,
 	id,
+	icon,
 	children = "",
 	required = false,
 	maxCharacter = 255,
 	onlyLetters = false,
 	onlyNumbers = false,
 	decimalNumber = false,
-	maxDecimals = 2,
+	maxDecimals = null,
 	signNumber = false,
 	formatNumber = false,
 	symbolMoney = false,
@@ -21,6 +25,13 @@ const InputText = ({
 			* Agregar los divs de información y feedback
 			* Alternar los divs de información y feedback segun la función de validación
 	*/
+
+	const input = useRef(null);
+
+	useEffect(() => {
+		// console.log(state.value);
+	}, [state]);
+
 	const REGEX_LETTERS = /^[A-ZÁÉÍÓÚÑa-záéíóúñ ]*$/;
 	const REGEX_NOT_NUMBERS = /[^0-9.-]/g;
 	const REGEX_UNSIGNED_NUMBERS = /^([0-9]+)$/;
@@ -36,17 +47,17 @@ const InputText = ({
 		format = {
 			style: "currency",
 			currency: "MXN",
-			maximumFractionDigits: maxDecimals
+			maximumFractionDigits: maxDecimals === null ? 20 : maxDecimals
 		};
 	} else {
 		format = {
 			style: "decimal",
-			maximumFractionDigits: maxDecimals
+			maximumFractionDigits: maxDecimals === null ? 20 : maxDecimals
 		};
 	}
 	const FORMAT_NUMBER = new Intl.NumberFormat("ES-MX", format);
 
-	function _validateRegex() {
+	function validateRegex() {
 		if (onlyNumbers) {
 			if (decimalNumber && !signNumber)
 				regexNum = new RegExp(REGEX_DECIMAL_UNSIGNED_NUMBERS);
@@ -61,93 +72,96 @@ const InputText = ({
 		return false;
 	}
 
-	_validateRegex();
+	validateRegex();
 
-	function maxLength(maxCharacter, input) {
-		const length = input.value.length;
-		if (length > maxCharacter) {
-			const value = input.value;
-			const startPosition = input.selectionStart; // Obtenemos la posicion del cursor
-			input.value =
-				value.substring(0, startPosition - 1) +
-				value.substring(startPosition, value.length);
-			return false;
-		}
-		return true;
+	/**
+	 * @function maxLength
+	 *
+	 * @description función para validar que el número de caracteres ingresados en el input no exceda el limite
+	 * 				de caracteres, en caso de que exceda el limite la función retornara un true, de lo contrario
+	 * 				retornara false
+	 * @param void
+	 * @returns boolean
+	 */
+	function maxLength() {
+		console.log(input.current.value.length > maxCharacter);
+		return input.current.value.length > maxCharacter;
 	}
 
-	function _removeData(input, data) {
-		const value = input.value;
+	function removeData(data) {
+		const value = input.current.value;
 		let indexData = value.lastIndexOf(data);
 		// En caso de que la opción de punto decimal este activa
 		if (decimalNumber) {
-			const position = input.selectionStart;
+			const position = input.current.selectionStart;
 			if (position < indexData) indexData = position - 1;
 		}
-		input.value =
+		input.current.value =
 			value.substring(0, indexData) +
 			value.substring(indexData + 1, value.length);
 	}
 
-	function numbers(input, data) {
-		if (!regexNum.test(input.value)) {
-			_removeData(input, data);
+	function numbers(data) {
+		if (!regexNum.test(input.current.value)) {
+			removeData(data);
 			return false;
 		}
 		return true;
 	}
 
-	function letters(input, data) {
+	function letters(data) {
 		if (!REGEX_LETTERS.test(data)) {
-			_removeData(input, data);
+			removeData(data);
 			return false;
 		}
 		return true;
 	}
 
-	function lettersAndNumbers(input, data) {
+	function lettersAndNumbers(data) {
 		if (!REGEX_NUMBERS_LETTERS.test(data)) {
-			_removeData(input, data);
+			removeData(data);
 			return false;
 		}
 		return true;
 	}
 
 	function onChange(event) {
-		const input = event.target; // Obtenemos el elemento
-		if (maxLength(maxCharacter, input)) {
-			const data = event.nativeEvent.data;
-			if (data != null) {
-				let flag = true;
-				if (onlyLetters) flag = letters(input, data);
-				else if (onlyNumbers) flag = numbers(input, data);
-				else if (onlyLettersAndNumbers) flag = lettersAndNumbers(input, data);
+		if (maxLength()) return;
+		const data = event.nativeEvent.data;
+		let flag = true;
+		if (data != null) {
+			if (onlyLetters) flag = letters(data);
+			else if (onlyNumbers) flag = numbers(data);
+			else if (onlyLettersAndNumbers) flag = lettersAndNumbers(data);
 
-				if (flag) functionValidate();
+			if (flag) {
+				functionValidate();
 			}
+		}
+		if (flag) {
+			setState({ ...state, value: event.target.value });
 		}
 	}
 
-	function onFocus(event) {
-		if (_validateRegex()) {
+	function onFocus() {
+		if (validateRegex()) {
 			// Eliminamos el formato del número si el campo no esta vacio
-			const input = event.target;
-			const value = input.value;
+			const value = input.current.value;
 			if (value !== "") {
 				const newValue = value.replace(REGEX_NOT_NUMBERS, "");
-				input.value = newValue;
+				setState({ ...state, value: newValue });
 			}
 		}
 	}
 
-	function onBlur(event) {
+	function onBlur() {
 		if (onlyNumbers && formatNumber) {
 			// Aplicamos formato al número si el campo no esta vacio
-			const input = event.target;
-			const value = input.value;
+			const value = input.current.value;
 			if (value !== "") {
 				regexNum = new RegExp(REGEX_FORMAT_NUMBERS);
-				input.value = FORMAT_NUMBER.format(value);
+				const newValue = FORMAT_NUMBER.format(value);
+				setState({ ...state, value: newValue });
 			}
 		}
 	}
@@ -183,43 +197,70 @@ const InputText = ({
 				REGEX_NUMBERS_LETTERS,
 				"El texto que se quiere pegar no concuerda con el formato de solo letras y números"
 			);
+			return;
 		}
+
+		setState({ ...state, value: data });
 	}
+
+	function clear() {
+		setState({ value: "", valid: null });
+		input.current.value = "";
+		input.current.focus();
+	}
+
+	const IconError = (
+		<path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z" />
+	);
+
+	const IconSuccess = (
+		<path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+	);
 
 	return (
 		<div className={styles.container}>
-			<input
-				id={id}
-				className={styles.inputs + " " + styles.invalid}
-				placeholder={children}
-				type="text"
-				required={required}
-				onChange={(event) => onChange(event)}
-				onBlur={(event) => onBlur(event)}
-				onFocus={(event) => onFocus(event)}
-				onPaste={(event) => onPaste(event)}
-			/>
-			<label htmlFor={id}>
-				<Icon className={styles.icon + " " + styles.iconHelp}>
-					<path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
+			<div className={styles.containerInput}>
+				<input
+					ref={input}
+					id={id}
+					className={styles.inputs + " " + styles.invalid}
+					placeholder={children}
+					type="text"
+					value={state.value}
+					required={required}
+					onChange={(event) => onChange(event)}
+					onBlur={onBlur}
+					onFocus={onFocus}
+					onPaste={(event) => onPaste(event)}
+				/>
+				<label htmlFor={id}>
+					<Icon className={styles.icon + " " + styles.iconHelp}>{icon}</Icon>
+				</label>
+				<Icon
+					className={
+						styles.icon + " " + styles.iconFeedback + " " + styles.iconError
+					}
+					onClick={clear}
+				>
+					{IconError}
 				</Icon>
-			</label>
-			<Icon
-				className={
-					styles.icon + " " + styles.iconFeedback + " " + styles.iconError
-				}
-			>
-				<path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z" />
-
-				{/* <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" /> */}
-			</Icon>
+			</div>
+			<div className={styles.feedback}>
+				Escribe el nombre de un pokemón para saber sus propiedades
+			</div>
 		</div>
 	);
 };
 
-const Icon = ({ className, children }) => {
+const Icon = ({ className, children, onClick = null }) => {
 	return (
-		<svg className={className} width="16" height="16" viewBox="0 0 16 16">
+		<svg
+			onClick={onClick}
+			className={className}
+			width="16"
+			height="16"
+			viewBox="0 0 16 16"
+		>
 			{children}
 		</svg>
 	);
@@ -227,11 +268,15 @@ const Icon = ({ className, children }) => {
 
 Icon.propTypes = {
 	className: PropTypes.string,
-	children: PropTypes.oneOfType([PropTypes.element, PropTypes.array])
+	children: PropTypes.oneOfType([PropTypes.element, PropTypes.array]),
+	onClick: PropTypes.func
 };
 
 InputText.propTypes = {
+	state: PropTypes.object,
+	setState: PropTypes.func,
 	id: PropTypes.string,
+	icon: PropTypes.node,
 	children: PropTypes.string,
 	required: PropTypes.bool,
 	maxCharacter: PropTypes.number,
@@ -246,4 +291,4 @@ InputText.propTypes = {
 	functionValidate: PropTypes.func
 };
 
-export default InputText;
+export { InputText };

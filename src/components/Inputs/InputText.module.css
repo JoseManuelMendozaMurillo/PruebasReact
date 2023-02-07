@@ -4,7 +4,18 @@
     --color-secundario: #736d62;
 }
 
+
 .container{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 0.5vh;
+}
+
+.containerInput{
+    width: 100%;
     position: relative;
 }
 
@@ -52,13 +63,13 @@
 .icon{
     position: absolute;
     
-    width: 7%;
+    width: 3.3vh;
     height: fit-content;
     z-index: 1;
 }
 
 .iconHelp{
-    bottom: 1.6vh;
+    bottom: 1.35vh;
     left: 1.4vh;
     fill: var(--color-secundario);
 }
@@ -68,8 +79,8 @@
 }
 
 .iconFeedback{
-    bottom: 1.6vh;
-    left: 37vh;
+    bottom: 1.35vh;
+    right: 1.5vh;
     display: none;
 }
 
@@ -81,4 +92,13 @@
 .iconError{
     fill: var(--color-invalido);
     display: block;
+}
+
+.feedback{
+    width: 100%;
+    word-wrap: break-word;
+    padding: 1vh 0.8vh;
+    font-size: 2.5vh;
+    text-align: left;
+    color: var(--color-secundario);
 }
