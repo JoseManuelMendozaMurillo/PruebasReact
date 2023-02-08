@@ -22,29 +22,25 @@ const InputText = ({
 }) => {
 	/*
 		COSAS QUE FALTAN:
-			* Agregar los divs de información y feedback
 			* Alternar los divs de información y feedback segun la función de validación
 	*/
 
 	const input = useRef(null);
 
-	const [verify, setVerify] = useState(null);
-
-	useEffect(() => {}, [state]);
-
 	useEffect(() => {
-		if (verify === null) return;
+		if (state.value === "" ){
+			setState({...state, valid:null});
+			return;
+		}
 
 		const result = functionValidate();
-		if (typeof result === "boolean") {
-			if (state.valid === false || state.valid === null)
-				setState({ ...state, valid: true });
-		} else {
-			if (state.valid === true || state.valid === null)
-				setState({ ...state, valid: false });
+		if(typeof result === "boolean"){
+			if(state.valid === false || state.valid === null) setState({...state, valid:true});
+		}else{
+			if(state.valid === true || state.valid === null) setState({...state, valid:false});
 		}
-		console.log(state.value);
-	}, [verify]);
+		
+	}, [state.value]);
 
 	const REGEX_LETTERS = /^[A-ZÁÉÍÓÚÑa-záéíóúñ ]*$/;
 	const REGEX_NOT_NUMBERS = /[^0-9.-]/g;
@@ -148,9 +144,8 @@ const InputText = ({
 			else if (onlyLettersAndNumbers) flag = lettersAndNumbers(data);
 		}
 		if (flag) {
-			setState({ ...state, value: event.target.value });
+			setState({...state, value:event.target.value});
 		}
-		setVerify(flag);
 	}
 
 	function onFocus() {
@@ -159,7 +154,7 @@ const InputText = ({
 			const value = input.current.value;
 			if (value !== "") {
 				const newValue = value.replace(REGEX_NOT_NUMBERS, "");
-				setState({ ...state, value: newValue });
+				setState({...state, value:newValue});
 			}
 		}
 	}
@@ -171,7 +166,7 @@ const InputText = ({
 			if (value !== "") {
 				regexNum = new RegExp(REGEX_FORMAT_NUMBERS);
 				const newValue = FORMAT_NUMBER.format(value);
-				setState({ ...state, value: newValue });
+				setState({...state, value:newValue});
 			}
 		}
 	}
@@ -210,11 +205,11 @@ const InputText = ({
 			return;
 		}
 
-		setState({ ...state, value: data });
+		setState({...state, value:data});
 	}
 
 	function clear() {
-		setState({ value: "", valid: null });
+		setState({value:"", valid:null});
 		input.current.value = "";
 		input.current.focus();
 	}
@@ -233,7 +228,13 @@ const InputText = ({
 				<input
 					ref={input}
 					id={id}
-					className={styles.inputs + " " + styles.invalid}
+					className={
+						state.valid === null 
+						? styles.inputs
+						: state.valid  
+							? styles.inputs + " " + styles.valid
+							: styles.inputs + " " + styles.invalid
+					}
 					placeholder={children}
 					type="text"
 					value={state.value}
@@ -248,11 +249,15 @@ const InputText = ({
 				</label>
 				<Icon
 					className={
-						styles.icon + " " + styles.iconFeedback + " " + styles.iconError
-					}
+						state.valid === null 
+						? styles.icon + " " + styles.iconFeedback 
+						: state.valid 
+							? styles.icon + " " + styles.iconFeedback + " " + styles.iconSuccess
+							: styles.icon + " " + styles.iconFeedback + " " + styles.iconError
+						}
 					onClick={clear}
 				>
-					{IconError}
+					{state.valid ? IconSuccess : IconError} 
 				</Icon>
 			</div>
 			<div className={styles.feedback}>

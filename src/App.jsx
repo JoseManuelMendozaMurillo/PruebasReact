@@ -7,7 +7,8 @@ import { InputText } from "./components/Inputs/InputText";
 import { useState } from "react";
 
 const App = () => {
-	const [state, setState] = useState({ value: "", valid: null });
+
+	const [state, setState] = useState({value:"", valid:null});
 
 	const SearchPokemon = () => {
 		console.log(state.value);
