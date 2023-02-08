@@ -13,6 +13,21 @@ const App = () => {
 		console.log(state.value);
 	};
 
+	/**
+	 * @function functionValidate
+	 * @description Función que valida si una edad se encuentra entre el rango de 0 - 125 años, si la edad no se
+	 * 				encuentra en este rango devuelve un string describiendo el problema, si la edad sí se encuentra
+	 * 				en este rango devuelve un true
+	 * @param void
+	 * @returns string | boolean
+	 */
+	const functionValidate = () => {
+		const edad = parseInt(state.value);
+		if (edad < 0) return "La edad no puede ser menor que cero";
+		if (edad > 125) return "La edad no puede ser mayor a 125 años";
+		return true;
+	};
+
 	return (
 		<main>
 			<h1 className={styles.Title}>Pokedex</h1>
@@ -34,14 +49,9 @@ const App = () => {
 						}
 						className={styles.inputs}
 						required={true}
-						maxCharacter={10}
+						maxCharacter={3}
 						onlyNumbers={true}
-						decimalNumber={true}
-						signNumber={true}
-						formatNumber={true}
-						functionValidate={() => {
-							// console.log(state.value);
-						}}
+						functionValidate={functionValidate}
 					>
 						Nombre del pokemon
 					</InputText>

@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "./InputText.module.css";
 
 const InputText = ({
@@ -28,9 +28,23 @@ const InputText = ({
 
 	const input = useRef(null);
 
+	const [verify, setVerify] = useState(null);
+
+	useEffect(() => {}, [state]);
+
 	useEffect(() => {
-		// console.log(state.value);
-	}, [state]);
+		if (verify === null) return;
+
+		const result = functionValidate();
+		if (typeof result === "boolean") {
+			if (state.valid === false || state.valid === null)
+				setState({ ...state, valid: true });
+		} else {
+			if (state.valid === true || state.valid === null)
+				setState({ ...state, valid: false });
+		}
+		console.log(state.value);
+	}, [verify]);
 
 	const REGEX_LETTERS = /^[A-ZÁÉÍÓÚÑa-záéíóúñ ]*$/;
 	const REGEX_NOT_NUMBERS = /[^0-9.-]/g;
@@ -84,7 +98,6 @@ const InputText = ({
 	 * @returns boolean
 	 */
 	function maxLength() {
-		console.log(input.current.value.length > maxCharacter);
 		return input.current.value.length > maxCharacter;
 	}
 
@@ -133,14 +146,11 @@ const InputText = ({
 			if (onlyLetters) flag = letters(data);
 			else if (onlyNumbers) flag = numbers(data);
 			else if (onlyLettersAndNumbers) flag = lettersAndNumbers(data);
-
-			if (flag) {
-				functionValidate();
-			}
 		}
 		if (flag) {
 			setState({ ...state, value: event.target.value });
 		}
+		setVerify(flag);
 	}
 
 	function onFocus() {
