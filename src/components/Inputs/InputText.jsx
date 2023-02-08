@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef} from "react";
 import styles from "./InputText.module.css";
 
 const InputText = ({
@@ -7,6 +7,8 @@ const InputText = ({
 	setState,
 	id,
 	icon,
+	description,
+	success,
 	children = "",
 	required = false,
 	maxCharacter = 255,
@@ -24,7 +26,6 @@ const InputText = ({
 		COSAS QUE FALTAN:
 			* Alternar los divs de información y feedback segun la función de validación
 	*/
-
 	const input = useRef(null);
 
 	useEffect(() => {
@@ -35,12 +36,17 @@ const InputText = ({
 
 		const result = functionValidate();
 		if(typeof result === "boolean"){
-			if(state.valid === false || state.valid === null) setState({...state, valid:true});
+			if(state.valid === false || state.valid === null){
+				setState({...state, valid:true});
+			} 
 		}else{
-			if(state.valid === true || state.valid === null) setState({...state, valid:false});
+			if(state.valid === true || state.valid === null){
+				setState({...state, valid:false});
+			} 
 		}
 		
 	}, [state.value]);
+
 
 	const REGEX_LETTERS = /^[A-ZÁÉÍÓÚÑa-záéíóúñ ]*$/;
 	const REGEX_NOT_NUMBERS = /[^0-9.-]/g;
@@ -260,8 +266,21 @@ const InputText = ({
 					{state.valid ? IconSuccess : IconError} 
 				</Icon>
 			</div>
-			<div className={styles.feedback}>
-				Escribe el nombre de un pokemón para saber sus propiedades
+			<div 
+			className={
+				state.valid === null 
+				? styles.feedback
+				: state.valid 
+					? styles.feedback + " " + styles.feedbackSuccess 
+					: styles.feedback + " " + styles.feedbackError
+				}	
+			>
+				{state.valid === null 
+					? description 
+					: state.valid 
+						? success
+						: functionValidate()
+				}
 			</div>
 		</div>
 	);
@@ -292,6 +311,8 @@ InputText.propTypes = {
 	setState: PropTypes.func,
 	id: PropTypes.string,
 	icon: PropTypes.node,
+	description: PropTypes.string,
+	success: PropTypes.string,
 	children: PropTypes.string,
 	required: PropTypes.bool,
 	maxCharacter: PropTypes.number,

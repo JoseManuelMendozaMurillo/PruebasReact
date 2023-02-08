@@ -102,3 +102,11 @@
     text-align: left;
     color: var(--color-secundario);
 }
+
+.feedbackSuccess{
+    color: var(--color-valido);
+}
+
+.feedbackError{
+    color: var(--color-invalido);
+}
