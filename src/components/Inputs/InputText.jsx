@@ -24,12 +24,16 @@ const InputText = ({
 }) => {
 	/*
 		COSAS QUE FALTAN:
-			* Alternar los divs de información y feedback segun la función de validación
+			* Optimizar el componente (parece ser que existen errorres con los estados)
+			* Separar el componente en varios componentes
+			* Documentar las funciones
 	*/
 	const input = useRef(null);
 
+	console.log("Render");
+
 	useEffect(() => {
-		if (state.value === "" ){
+		if (state.value === ""){
 			setState({...state, valid:null});
 			return;
 		}
@@ -45,6 +49,8 @@ const InputText = ({
 			} 
 		}
 		
+		console.log("PreRender");
+
 	}, [state.value]);
 
 
