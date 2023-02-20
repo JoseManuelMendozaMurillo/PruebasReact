@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { useEffect, useRef} from "react";
+import { useEffect, useRef } from "react";
 import styles from "./InputText.module.css";
 
 const InputText = ({
@@ -33,26 +33,24 @@ const InputText = ({
 	console.log("Render");
 
 	useEffect(() => {
-		if (state.value === ""){
-			setState({...state, valid:null});
+		if (state.value === "") {
+			setState({ ...state, valid: null });
 			return;
 		}
 
 		const result = functionValidate();
-		if(typeof result === "boolean"){
-			if(state.valid === false || state.valid === null){
-				setState({...state, valid:true});
-			} 
-		}else{
-			if(state.valid === true || state.valid === null){
-				setState({...state, valid:false});
-			} 
+		if (typeof result === "boolean") {
+			if (state.valid === false || state.valid === null) {
+				setState({ ...state, valid: true });
+			}
+		} else {
+			if (state.valid === true || state.valid === null) {
+				setState({ ...state, valid: false });
+			}
 		}
-		
+
 		console.log("PreRender");
-
 	}, [state.value]);
-
 
 	const REGEX_LETTERS = /^[A-ZÁÉÍÓÚÑa-záéíóúñ ]*$/;
 	const REGEX_NOT_NUMBERS = /[^0-9.-]/g;
@@ -155,8 +153,9 @@ const InputText = ({
 			else if (onlyNumbers) flag = numbers(data);
 			else if (onlyLettersAndNumbers) flag = lettersAndNumbers(data);
 		}
+
 		if (flag) {
-			setState({...state, value:event.target.value});
+			setState({ ...state, value: event.target.value });
 		}
 	}
 
@@ -166,7 +165,7 @@ const InputText = ({
 			const value = input.current.value;
 			if (value !== "") {
 				const newValue = value.replace(REGEX_NOT_NUMBERS, "");
-				setState({...state, value:newValue});
+				setState({ ...state, value: newValue });
 			}
 		}
 	}
@@ -178,7 +177,7 @@ const InputText = ({
 			if (value !== "") {
 				regexNum = new RegExp(REGEX_FORMAT_NUMBERS);
 				const newValue = FORMAT_NUMBER.format(value);
-				setState({...state, value:newValue});
+				setState({ ...state, value: newValue });
 			}
 		}
 	}
@@ -217,11 +216,11 @@ const InputText = ({
 			return;
 		}
 
-		setState({...state, value:data});
+		setState({ ...state, value: data });
 	}
 
 	function clear() {
-		setState({value:"", valid:null});
+		setState({ value: "", valid: null });
 		input.current.value = "";
 		input.current.focus();
 	}
@@ -241,9 +240,9 @@ const InputText = ({
 					ref={input}
 					id={id}
 					className={
-						state.valid === null 
-						? styles.inputs
-						: state.valid  
+						state.valid === null
+							? styles.inputs
+							: state.valid
 							? styles.inputs + " " + styles.valid
 							: styles.inputs + " " + styles.invalid
 					}
@@ -261,32 +260,35 @@ const InputText = ({
 				</label>
 				<Icon
 					className={
-						state.valid === null 
-						? styles.icon + " " + styles.iconFeedback 
-						: state.valid 
-							? styles.icon + " " + styles.iconFeedback + " " + styles.iconSuccess
+						state.valid === null
+							? styles.icon + " " + styles.iconFeedback
+							: state.valid
+							? styles.icon +
+							  " " +
+							  styles.iconFeedback +
+							  " " +
+							  styles.iconSuccess
 							: styles.icon + " " + styles.iconFeedback + " " + styles.iconError
-						}
+					}
 					onClick={clear}
 				>
-					{state.valid ? IconSuccess : IconError} 
+					{state.valid ? IconSuccess : IconError}
 				</Icon>
 			</div>
-			<div 
-			className={
-				state.valid === null 
-				? styles.feedback
-				: state.valid 
-					? styles.feedback + " " + styles.feedbackSuccess 
-					: styles.feedback + " " + styles.feedbackError
-				}	
-			>
-				{state.valid === null 
-					? description 
-					: state.valid 
-						? success
-						: functionValidate()
+			<div
+				className={
+					state.valid === null
+						? styles.feedback
+						: state.valid
+						? styles.feedback + " " + styles.feedbackSuccess
+						: styles.feedback + " " + styles.feedbackError
 				}
+			>
+				{state.valid === null
+					? description
+					: state.valid
+					? success
+					: functionValidate()}
 			</div>
 		</div>
 	);
