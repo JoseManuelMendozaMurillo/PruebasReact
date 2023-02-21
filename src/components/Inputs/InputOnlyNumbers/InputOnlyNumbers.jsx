@@ -1,8 +1,8 @@
 import PropTypes from "prop-types";
-import { useRef } from "react";
-import styles from "./InputText.module.css";
+import { useEffect, useRef } from "react";
+import styles from "../InputText.module.css";
 
-const InputText = ({
+const InputOnlyNumbers = ({
 	state,
 	setState,
 	id,
@@ -12,65 +12,33 @@ const InputText = ({
 	children = "",
 	required = false,
 	maxCharacter = 255,
-	onlyLetters = false,
-	onlyNumbers = false,
-	decimalNumber = false,
-	maxDecimals = null,
-	signNumber = false,
 	formatNumber = false,
-	symbolMoney = false,
-	onlyLettersAndNumbers = false,
 	functionValidate
 }) => {
 	/*
 		COSAS QUE FALTAN:
-			* Separar el componente en varios componentes
 			* Documentar las funciones
 	*/
 	const input = useRef(null);
 	const mnsjError = useRef(null);
 
-	const REGEX_LETTERS = /^[A-ZÁÉÍÓÚÑa-záéíóúñ ]*$/;
-	const REGEX_NOT_NUMBERS = /[^0-9.-]/g;
-	const REGEX_UNSIGNED_NUMBERS = /^([0-9]+)$/;
-	const REGEX_DECIMAL_UNSIGNED_NUMBERS = /^([0-9]*\.?[0-9]*)$/;
-	const REGEX_SIGN_NUMBERS = /^(-?[0-9]*)$/;
-	const REGEX_DECIMAL_SIGN_NUMBERS = /^(-?[0-9]*\.?[0-9]*)$/;
-	const REGEX_FORMAT_NUMBERS = /[0-9.,-]/g;
-	const REGEX_NUMBERS_LETTERS = /^[A-ZÁÉÍÓÚÑa-záéíóúñ0-9 ]*$/;
+    const REGEX_NOT_NUMBERS = /[^0-9]/g;
+    const REGEX_NUMBERS = /[0-9]/g;
+    const REGEX_FORMAT_NUMBERS = /[0-9,]/g;
 
 	let format, regexNum;
 
-	if (symbolMoney) {
-		format = {
-			style: "currency",
-			currency: "MXN",
-			maximumFractionDigits: maxDecimals === null ? 20 : maxDecimals
-		};
-	} else {
-		format = {
-			style: "decimal",
-			maximumFractionDigits: maxDecimals === null ? 20 : maxDecimals
-		};
-	}
-	const FORMAT_NUMBER = new Intl.NumberFormat("ES-MX", format);
+    useEffect(()=>{
+        if(formatNumber){
+            format = {
+                style: "decimal",
+            };
+        }
+        regexNum = new RegExp(REGEX_NUMBERS);
+    }, [])
 
-	function validateRegex() {
-		if (onlyNumbers) {
-			if (decimalNumber && !signNumber)
-				regexNum = new RegExp(REGEX_DECIMAL_UNSIGNED_NUMBERS);
-			else if (signNumber && !decimalNumber)
-				regexNum = new RegExp(REGEX_SIGN_NUMBERS);
-			else if (decimalNumber && signNumber)
-				regexNum = new RegExp(REGEX_DECIMAL_SIGN_NUMBERS);
-			else regexNum = new RegExp(REGEX_UNSIGNED_NUMBERS);
+    const FORMAT_NUMBER = new Intl.NumberFormat("ES-MX", format);
 
-			return true;
-		}
-		return false;
-	}
-
-	validateRegex();
 
 	/**
 	 * @function maxLength
@@ -86,13 +54,9 @@ const InputText = ({
 	}
 
 	function removeData(data) {
+        if(data === null) return;
 		const value = input.current.value;
 		let indexData = value.lastIndexOf(data);
-		// En caso de que la opción de punto decimal este activa
-		if (decimalNumber) {
-			const position = input.current.selectionStart;
-			if (position < indexData) indexData = position - 1;
-		}
 		input.current.value =
 			value.substring(0, indexData) +
 			value.substring(indexData + 1, value.length);
@@ -106,48 +70,32 @@ const InputText = ({
 		return true;
 	}
 
-	function letters(data) {
-		if (!REGEX_LETTERS.test(data)) {
-			removeData(data);
-			return false;
-		}
-		return true;
-	}
 
-	function lettersAndNumbers(data) {
-		if (!REGEX_NUMBERS_LETTERS.test(data)) {
-			removeData(data);
-			return false;
+	function changeState(data){
+        return data === null || numbers(data);
+    }
+    
+    function applyChangeState(){
+        const value = input.current.value;
+		if (value === ""){
+			setState({value:"", valid:null});
+			return;
 		}
-		return true;
-	}
+		mnsjError.current = functionValidate(value);
+		if(typeof mnsjError.current === "boolean") setState({value:value, valid:true}); 
+		else setState({value:value, valid:false});
+    }
 
-	function onChange(event) {
+    function onChange(event) {
 		if (maxLength()) return;
 		const data = event.nativeEvent.data;
-		let flag = true;
-		if (data != null) {
-			if (onlyLetters) flag = letters(data);
-			else if (onlyNumbers) flag = numbers(data);
-			else if (onlyLettersAndNumbers) flag = lettersAndNumbers(data);
-		}
-		if (flag) {
-			const value = input.current.value;
-		
-			if (value === ""){
-				setState({value:"", valid:null});
-				return;
-			}
-	
-			mnsjError.current = functionValidate(value);
-			if(typeof mnsjError.current === "boolean") setState({value:value, valid:true}); 
-			else setState({value:value, valid:false});
-			
+		if (changeState(data)) {
+			applyChangeState();
 		}
 	}
 
 	function onFocus() {
-		if (validateRegex()) {
+		if (formatNumber) {
 			// Eliminamos el formato del número si el campo no esta vacio
 			const value = input.current.value;
 			if (value !== "") {
@@ -158,7 +106,7 @@ const InputText = ({
 	}
 
 	function onBlur() {
-		if (onlyNumbers && formatNumber) {
+		if (formatNumber) {
 			// Aplicamos formato al número si el campo no esta vacio
 			const value = input.current.value;
 			if (value !== "") {
@@ -171,38 +119,11 @@ const InputText = ({
 
 	function onPaste(event) {
 		const data = event.nativeEvent.clipboardData.getData("text"); // Obtenemos el texto que se pego
-
-		function verifyPaste(regex, textError) {
-			if (!regex.test(data)) {
-				event.preventDefault();
-				console.error(textError);
-			}
+		if (!regexNum.test(data)) {
+			event.preventDefault();
+			console.error("El texto que se quiere pegar contiene caracteres que no son números");
+            return;
 		}
-
-		if (onlyNumbers) {
-			verifyPaste(
-				regexNum,
-				"El texto que se quiere pegar no concuerda con el formato de un número"
-			);
-			return;
-		}
-
-		if (onlyLetters) {
-			verifyPaste(
-				REGEX_LETTERS,
-				"El texto que se quiere pegar no concuerda con el formato de solo letras"
-			);
-			return;
-		}
-
-		if (onlyLettersAndNumbers) {
-			verifyPaste(
-				REGEX_NUMBERS_LETTERS,
-				"El texto que se quiere pegar no concuerda con el formato de solo letras y números"
-			);
-			return;
-		}
-
 		setState({...state, value:data});
 	}
 
@@ -298,7 +219,7 @@ Icon.propTypes = {
 	onClick: PropTypes.func
 };
 
-InputText.propTypes = {
+InputOnlyNumbers.propTypes = {
 	state: PropTypes.object,
 	setState: PropTypes.func,
 	id: PropTypes.string,
@@ -308,15 +229,8 @@ InputText.propTypes = {
 	children: PropTypes.string,
 	required: PropTypes.bool,
 	maxCharacter: PropTypes.number,
-	onlyLetters: PropTypes.bool,
-	onlyNumbers: PropTypes.bool,
-	decimalNumber: PropTypes.bool,
-	maxDecimals: PropTypes.number,
-	signNumber: PropTypes.bool,
 	formatNumber: PropTypes.bool,
-	symbolMoney: PropTypes.bool,
-	onlyLettersAndNumbers: PropTypes.bool,
 	functionValidate: PropTypes.func
 };
 
-export default InputText ;
+export default InputOnlyNumbers;
