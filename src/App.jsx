@@ -1,9 +1,9 @@
 import styles from "./App.module.css";
 
 // Components
-import ButtonSearch from "./components/Buttons/ButtonSearch";
-import Label from "./components/Labels/Label";
-import { InputText } from "./components/Inputs/InputText";
+import ButtonSearch from "./components/Buttons/ButtonSearch.jsx";
+import Label from "./components/Labels/Label.jsx";
+import InputOnlyNumbers from "./components/Inputs/InputOnlyNumbers/InputOnlyNumbers.jsx";
 import { useState } from "react";
 
 const App = () => {
@@ -22,8 +22,8 @@ const App = () => {
 	 * @param void
 	 * @returns string | boolean
 	 */
-	const functionValidate = () => {
-		const edad = parseInt(state.value);
+	const functionValidate = (edad) => {
+		edad = parseInt(edad);
 		if (edad < 0) return "La edad no puede ser menor que cero";
 		if (edad > 125) return "La edad no puede ser mayor a 125 años";
 		return true;
@@ -41,7 +41,7 @@ const App = () => {
 					>
 						Buscar pokemón
 					</Label>
-					<InputText
+					<InputOnlyNumbers
 						state={state}
 						setState={setState}
 						id="buscarPokemon"
@@ -53,11 +53,10 @@ const App = () => {
 						className={styles.inputs}
 						required={true}
 						maxCharacter={3}
-						onlyNumbers={true}
 						functionValidate={functionValidate}
 					>
 						Nombre del pokemon
-					</InputText>
+					</InputOnlyNumbers>
 				</div>
 			</form>
 			<ButtonSearch onclick={() => SearchPokemon()}>Buscar</ButtonSearch>

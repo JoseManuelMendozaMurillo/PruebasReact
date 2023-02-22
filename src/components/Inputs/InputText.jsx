@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import styles from "./InputText.module.css";
 
 const InputText = ({
@@ -24,7 +24,6 @@ const InputText = ({
 }) => {
 	/*
 		COSAS QUE FALTAN:
-			* Optimizar el componente (parece ser que existen errorres con los estados)
 			* Separar el componente en varios componentes
 			* Documentar las funciones
 	*/
@@ -33,24 +32,26 @@ const InputText = ({
 	console.log("Render");
 
 	useEffect(() => {
-		if (state.value === "") {
-			setState({ ...state, valid: null });
+		if (state.value === ""){
+			setState({...state, valid:null});
 			return;
 		}
 
 		const result = functionValidate();
-		if (typeof result === "boolean") {
-			if (state.valid === false || state.valid === null) {
-				setState({ ...state, valid: true });
-			}
-		} else {
-			if (state.valid === true || state.valid === null) {
-				setState({ ...state, valid: false });
-			}
+		if(typeof result === "boolean"){
+			if(state.valid === false || state.valid === null){
+				setState({...state, valid:true});
+			} 
+		}else{
+			if(state.valid === true || state.valid === null){
+				setState({...state, valid:false});
+			} 
 		}
-
+		
 		console.log("PreRender");
+
 	}, [state.value]);
+
 
 	const REGEX_LETTERS = /^[A-ZÁÉÍÓÚÑa-záéíóúñ ]*$/;
 	const REGEX_NOT_NUMBERS = /[^0-9.-]/g;
@@ -155,7 +156,7 @@ const InputText = ({
 		}
 
 		if (flag) {
-			setState({ ...state, value: event.target.value });
+			setState({...state, value:event.target.value});
 		}
 	}
 
@@ -284,11 +285,12 @@ const InputText = ({
 						: styles.feedback + " " + styles.feedbackError
 				}
 			>
-				{state.valid === null
-					? description
-					: state.valid
-					? success
-					: functionValidate()}
+				{state.valid === null 
+					? description 
+					: state.valid 
+						? success
+						: functionValidate()
+				}
 			</div>
 		</div>
 	);
@@ -335,4 +337,4 @@ InputText.propTypes = {
 	functionValidate: PropTypes.func
 };
 
-export { InputText };
+export default InputText ;
