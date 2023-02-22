@@ -7,8 +7,7 @@ import InputOnlyNumbers from "./components/Inputs/InputOnlyNumbers/InputOnlyNumb
 import { useState } from "react";
 
 const App = () => {
-
-	const [state, setState] = useState({value:"", valid:null});
+	const [state, setState] = useState({ value: "", valid: null });
 
 	const SearchPokemon = () => {
 		console.log(state.value);
@@ -52,7 +51,7 @@ const App = () => {
 						success="El formato se ve bien"
 						className={styles.inputs}
 						required={true}
-						maxCharacter={3}
+						maxCharacter={4}
 						functionValidate={functionValidate}
 					>
 						Nombre del pokemon

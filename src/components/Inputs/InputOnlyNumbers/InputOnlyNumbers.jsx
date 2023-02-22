@@ -22,23 +22,23 @@ const InputOnlyNumbers = ({
 	const input = useRef(null);
 	const mnsjError = useRef(null);
 
-    const REGEX_NOT_NUMBERS = /[^0-9]/g;
-    const REGEX_NUMBERS = /[0-9]/g;
-    const REGEX_FORMAT_NUMBERS = /[0-9,]/g;
+	const REGEX_NOT_NUMBERS = /[^0-9]/g;
+	const REGEX_NUMBERS = /[0-9]/g;
+	const REGEX_FORMAT_NUMBERS = /[0-9,]/g;
 
 	let format, regexNum;
 
-    useEffect(()=>{
-        if(formatNumber){
-            format = {
-                style: "decimal",
-            };
-        }
-        regexNum = new RegExp(REGEX_NUMBERS);
-    }, [])
+	useEffect(() => {
+		if (formatNumber) {
+			format = {
+				minimumFractionDigits: 0,
+				maximumFractionDigits: 0
+			};
+		}
+	}, []);
 
-    const FORMAT_NUMBER = new Intl.NumberFormat("ES-MX", format);
-
+	regexNum = new RegExp(REGEX_NUMBERS);
+	const FORMAT_NUMBER = new Intl.NumberFormat("ES-MX", format);
 
 	/**
 	 * @function maxLength
@@ -54,9 +54,9 @@ const InputOnlyNumbers = ({
 	}
 
 	function removeData(data) {
-        if(data === null) return;
+		if (data === null) return;
 		const value = input.current.value;
-		let indexData = value.lastIndexOf(data);
+		const indexData = value.lastIndexOf(data);
 		input.current.value =
 			value.substring(0, indexData) +
 			value.substring(indexData + 1, value.length);
@@ -70,23 +70,23 @@ const InputOnlyNumbers = ({
 		return true;
 	}
 
+	function changeState(data) {
+		return data === null || numbers(data);
+	}
 
-	function changeState(data){
-        return data === null || numbers(data);
-    }
-    
-    function applyChangeState(){
-        const value = input.current.value;
-		if (value === ""){
-			setState({value:"", valid:null});
+	function applyChangeState() {
+		const val = input.current.value;
+		if (val === "") {
+			setState({ value: "", valid: null });
 			return;
 		}
-		mnsjError.current = functionValidate(value);
-		if(typeof mnsjError.current === "boolean") setState({value:value, valid:true}); 
-		else setState({value:value, valid:false});
-    }
+		mnsjError.current = functionValidate(val);
+		if (typeof mnsjError.current === "boolean")
+			setState({ value: val, valid: true });
+		else setState({ value: val, valid: false });
+	}
 
-    function onChange(event) {
+	function onChange(event) {
 		if (maxLength()) return;
 		const data = event.nativeEvent.data;
 		if (changeState(data)) {
@@ -100,7 +100,7 @@ const InputOnlyNumbers = ({
 			const value = input.current.value;
 			if (value !== "") {
 				const newValue = value.replace(REGEX_NOT_NUMBERS, "");
-				setState({...state, value:newValue});
+				setState({ ...state, value: newValue });
 			}
 		}
 	}
@@ -112,7 +112,7 @@ const InputOnlyNumbers = ({
 			if (value !== "") {
 				regexNum = new RegExp(REGEX_FORMAT_NUMBERS);
 				const newValue = FORMAT_NUMBER.format(value);
-				setState({...state, value:newValue});
+				setState({ ...state, value: newValue });
 			}
 		}
 	}
@@ -121,14 +121,16 @@ const InputOnlyNumbers = ({
 		const data = event.nativeEvent.clipboardData.getData("text"); // Obtenemos el texto que se pego
 		if (!regexNum.test(data)) {
 			event.preventDefault();
-			console.error("El texto que se quiere pegar contiene caracteres que no son números");
-            return;
+			console.error(
+				"El texto que se quiere pegar contiene caracteres que no son números"
+			);
+			return;
 		}
-		setState({...state, value:data});
+		setState({ ...state, value: data });
 	}
 
 	function clear() {
-		setState({value:"", valid:null});
+		setState({ value: "", valid: null });
 		input.current.value = "";
 		input.current.focus();
 	}
@@ -148,9 +150,9 @@ const InputOnlyNumbers = ({
 					ref={input}
 					id={id}
 					className={
-						state.valid === null 
-						? styles.inputs
-						: state.valid  
+						state.valid === null
+							? styles.inputs
+							: state.valid
 							? styles.inputs + " " + styles.valid
 							: styles.inputs + " " + styles.invalid
 					}
@@ -168,32 +170,35 @@ const InputOnlyNumbers = ({
 				</label>
 				<Icon
 					className={
-						state.valid === null 
-						? styles.icon + " " + styles.iconFeedback 
-						: state.valid 
-							? styles.icon + " " + styles.iconFeedback + " " + styles.iconSuccess
+						state.valid === null
+							? styles.icon + " " + styles.iconFeedback
+							: state.valid
+							? styles.icon +
+							  " " +
+							  styles.iconFeedback +
+							  " " +
+							  styles.iconSuccess
 							: styles.icon + " " + styles.iconFeedback + " " + styles.iconError
-						}
+					}
 					onClick={clear}
 				>
-					{state.valid ? IconSuccess : IconError} 
+					{state.valid ? IconSuccess : IconError}
 				</Icon>
 			</div>
-			<div 
-			className={
-				state.valid === null 
-				? styles.feedback
-				: state.valid 
-					? styles.feedback + " " + styles.feedbackSuccess 
-					: styles.feedback + " " + styles.feedbackError
-				}	
-			>
-				{state.valid === null 
-					? description 
-					: state.valid 
-						? success
-						: mnsjError.current
+			<div
+				className={
+					state.valid === null
+						? styles.feedback
+						: state.valid
+						? styles.feedback + " " + styles.feedbackSuccess
+						: styles.feedback + " " + styles.feedbackError
 				}
+			>
+				{state.valid === null
+					? description
+					: state.valid
+					? success
+					: mnsjError.current}
 			</div>
 		</div>
 	);

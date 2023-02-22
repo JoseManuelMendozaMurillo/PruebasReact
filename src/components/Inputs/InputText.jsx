@@ -28,30 +28,7 @@ const InputText = ({
 			* Documentar las funciones
 	*/
 	const input = useRef(null);
-
-	console.log("Render");
-
-	useEffect(() => {
-		if (state.value === ""){
-			setState({...state, valid:null});
-			return;
-		}
-
-		const result = functionValidate();
-		if(typeof result === "boolean"){
-			if(state.valid === false || state.valid === null){
-				setState({...state, valid:true});
-			} 
-		}else{
-			if(state.valid === true || state.valid === null){
-				setState({...state, valid:false});
-			} 
-		}
-		
-		console.log("PreRender");
-
-	}, [state.value]);
-
+	const mnsjError = useRef(null);
 
 	const REGEX_LETTERS = /^[A-ZÁÉÍÓÚÑa-záéíóúñ ]*$/;
 	const REGEX_NOT_NUMBERS = /[^0-9.-]/g;
@@ -154,9 +131,18 @@ const InputText = ({
 			else if (onlyNumbers) flag = numbers(data);
 			else if (onlyLettersAndNumbers) flag = lettersAndNumbers(data);
 		}
-
 		if (flag) {
-			setState({...state, value:event.target.value});
+			const value = input.current.value;
+
+			if (value === "") {
+				setState({ value: "", valid: null });
+				return;
+			}
+
+			mnsjError.current = functionValidate(value);
+			if (typeof mnsjError.current === "boolean")
+				setState({ value: value, valid: true });
+			else setState({ value: value, valid: false });
 		}
 	}
 
@@ -285,12 +271,11 @@ const InputText = ({
 						: styles.feedback + " " + styles.feedbackError
 				}
 			>
-				{state.valid === null 
-					? description 
-					: state.valid 
-						? success
-						: functionValidate()
-				}
+				{state.valid === null
+					? description
+					: state.valid
+					? success
+					: mnsjError.current}
 			</div>
 		</div>
 	);
@@ -337,4 +322,4 @@ InputText.propTypes = {
 	functionValidate: PropTypes.func
 };
 
-export default InputText ;
+export default InputText;
