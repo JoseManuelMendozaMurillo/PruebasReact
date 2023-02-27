@@ -1,3 +1,4 @@
+import React from "react";
 import styles from "./ButtonSearch.module.css";
 import PropTypes from "prop-types";
 
@@ -14,4 +15,4 @@ ButtonSearch.propTypes = {
 	onclick: PropTypes.func
 };
 
-export default ButtonSearch;
+export default React.memo(ButtonSearch);

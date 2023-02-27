@@ -3,7 +3,7 @@ import styles from "./App.module.css";
 // Components
 import ButtonSearch from "./components/Buttons/ButtonSearch.jsx";
 import Label from "./components/Labels/Label.jsx";
-import InputOnlyNumbers from "./components/Inputs/InputOnlyNumbers/InputOnlyNumbers.jsx";
+import InputOnlyNumbers from "./components/Inputs/InputOnlyNumbers/InputOnlyNumbers";
 import { useState } from "react";
 
 const App = () => {
@@ -51,7 +51,7 @@ const App = () => {
 						success="El formato se ve bien"
 						className={styles.inputs}
 						required={true}
-						maxCharacter={4}
+						maxCharacter={50}
 						functionValidate={functionValidate}
 					>
 						Nombre del pokemon

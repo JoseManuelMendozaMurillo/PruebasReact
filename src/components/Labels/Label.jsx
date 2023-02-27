@@ -1,3 +1,4 @@
+import React from "react";
 import PropTypes from "prop-types";
 
 const Label = ({
@@ -36,4 +37,4 @@ Label.propTypes = {
 	htmlFor: PropTypes.string.isRequired
 };
 
-export default Label;
+export default React.memo(Label);

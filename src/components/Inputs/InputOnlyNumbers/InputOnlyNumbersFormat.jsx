@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import { useRef } from "react";
 import styles from "../InputText.module.css";
 
-const InputOnlyNumbers = ({
+const InputOnlyNumbersFormat = ({
 	state,
 	setState,
 	id,
@@ -14,10 +14,22 @@ const InputOnlyNumbers = ({
 	maxCharacter = 255,
 	functionValidate
 }) => {
+	/*
+		COSAS QUE FALTAN:
+			* Documentar las funciones
+	*/
 	const input = useRef(null);
 	const mnsjError = useRef(null);
 
-	const REGEX_NUMBERS = /^[0-9]+$/g;
+	const REGEX_NOT_NUMBERS = /[^0-9]/g;
+	const REGEX_NUMBERS = /[0-9]/g;
+	const REGEX_FORMAT_NUMBERS = /[0-9,]/g;
+	const FORMAT_NUMBER = new Intl.NumberFormat("ES-MX", {
+		minimumFractionDigits: 0,
+		maximumFractionDigits: 0
+	});
+
+	let regexNum = new RegExp(REGEX_NUMBERS);
 
 	/**
 	 * @function maxLength
@@ -63,11 +75,10 @@ const InputOnlyNumbers = ({
 	 * @returns boolean
 	 */
 	function numbers(data) {
-		if (!REGEX_NUMBERS.test(data)) {
+		if (!regexNum.test(input.current.value)) {
 			removeData(data);
 			return false;
 		}
-		console.log("numbers", data);
 		return true;
 	}
 
@@ -127,9 +138,28 @@ const InputOnlyNumbers = ({
 		}
 	}
 
+	function onFocus() {
+		// Eliminamos el formato del número si el campo no esta vacio
+		const value = input.current.value;
+		if (value !== "") {
+			const newValue = value.replace(REGEX_NOT_NUMBERS, "");
+			setState({ ...state, value: newValue });
+		}
+	}
+
+	function onBlur() {
+		// Aplicamos formato al número si el campo no esta vacio
+		const value = input.current.value;
+		if (value !== "") {
+			regexNum = new RegExp(REGEX_FORMAT_NUMBERS);
+			const newValue = FORMAT_NUMBER.format(value);
+			setState({ ...state, value: newValue });
+		}
+	}
+
 	function onPaste(event) {
 		const data = event.nativeEvent.clipboardData.getData("text"); // Obtenemos el texto que se pego
-		if (!REGEX_NUMBERS.test(data)) {
+		if (!regexNum.test(data)) {
 			event.preventDefault();
 			console.error(
 				"El texto que se quiere pegar contiene caracteres que no son números"
@@ -163,6 +193,8 @@ const InputOnlyNumbers = ({
 					value={state.value}
 					required={required}
 					onChange={(event) => onChange(event)}
+					onBlur={onBlur}
+					onFocus={onFocus}
 					onPaste={(event) => onPaste(event)}
 				/>
 				<label htmlFor={id}>
@@ -224,7 +256,7 @@ Icon.propTypes = {
 	onClick: PropTypes.func
 };
 
-InputOnlyNumbers.propTypes = {
+InputOnlyNumbersFormat.propTypes = {
 	state: PropTypes.object,
 	setState: PropTypes.func,
 	id: PropTypes.string,
@@ -234,7 +266,8 @@ InputOnlyNumbers.propTypes = {
 	children: PropTypes.string,
 	required: PropTypes.bool,
 	maxCharacter: PropTypes.number,
+	formatNumber: PropTypes.bool,
 	functionValidate: PropTypes.func
 };
 
-export default InputOnlyNumbers;
+export default InputOnlyNumbersFormat;

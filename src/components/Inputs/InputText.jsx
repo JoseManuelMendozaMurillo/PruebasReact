@@ -203,7 +203,7 @@ const InputText = ({
 			return;
 		}
 
-		setState({ ...state, value: data });
+		setState({ ...state, value: state.value + data });
 	}
 
 	function clear() {
