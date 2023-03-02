@@ -3,7 +3,7 @@ import styles from "./App.module.css";
 // Components
 import ButtonSearch from "./components/Buttons/ButtonSearch.jsx";
 import Label from "./components/Labels/Label.jsx";
-import InputOnlyNumbers from "./components/Inputs/InputOnlyNumbers/InputOnlyNumbers";
+import InputOnlyNumbersFormat from "./components/Inputs/InputOnlyNumbers/InputOnlyNumbersFormat";
 import { useState } from "react";
 
 const App = () => {
@@ -40,7 +40,7 @@ const App = () => {
 					>
 						Buscar pokemón
 					</Label>
-					<InputOnlyNumbers
+					<InputOnlyNumbersFormat
 						state={state}
 						setState={setState}
 						id="buscarPokemon"
@@ -55,7 +55,7 @@ const App = () => {
 						functionValidate={functionValidate}
 					>
 						Nombre del pokemon
-					</InputOnlyNumbers>
+					</InputOnlyNumbersFormat>
 				</div>
 			</form>
 			<ButtonSearch onclick={() => SearchPokemon()}>Buscar</ButtonSearch>

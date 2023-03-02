@@ -143,7 +143,8 @@ const InputOnlyNumbersFormat = ({
 		const value = input.current.value;
 		if (value !== "") {
 			const newValue = value.replace(REGEX_NOT_NUMBERS, "");
-			setState({ ...state, value: newValue });
+			input.current.value = newValue;
+			// setState({ ...state, value: newValue });
 		}
 	}
 
@@ -153,7 +154,8 @@ const InputOnlyNumbersFormat = ({
 		if (value !== "") {
 			regexNum = new RegExp(REGEX_FORMAT_NUMBERS);
 			const newValue = FORMAT_NUMBER.format(value);
-			setState({ ...state, value: newValue });
+			input.current.value = newValue;
+			// setState({ ...state, value: newValue });
 		}
 	}
 
@@ -190,7 +192,6 @@ const InputOnlyNumbersFormat = ({
 					}
 					placeholder={children}
 					type="text"
-					value={state.value}
 					required={required}
 					onChange={(event) => onChange(event)}
 					onBlur={onBlur}
@@ -266,7 +267,6 @@ InputOnlyNumbersFormat.propTypes = {
 	children: PropTypes.string,
 	required: PropTypes.bool,
 	maxCharacter: PropTypes.number,
-	formatNumber: PropTypes.bool,
 	functionValidate: PropTypes.func
 };
 
