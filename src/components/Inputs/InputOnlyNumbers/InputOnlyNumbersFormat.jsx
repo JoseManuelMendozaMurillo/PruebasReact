@@ -22,7 +22,7 @@ const InputOnlyNumbersFormat = ({
 	const mnsjError = useRef(null);
 
 	const REGEX_NOT_NUMBERS = /[^0-9]/g;
-	const REGEX_NUMBERS = /[0-9]/g;
+	const REGEX_NUMBERS = /^[0-9]+$/g;
 	const REGEX_FORMAT_NUMBERS = /[0-9,]/g;
 	const FORMAT_NUMBER = new Intl.NumberFormat("ES-MX", {
 		minimumFractionDigits: 0,
@@ -77,8 +77,10 @@ const InputOnlyNumbersFormat = ({
 	function numbers(data) {
 		if (!regexNum.test(input.current.value)) {
 			removeData(data);
+			console.log("remove");
 			return false;
 		}
+		console.log("acept",input.current.value);
 		return true;
 	}
 
@@ -140,11 +142,11 @@ const InputOnlyNumbersFormat = ({
 
 	function onFocus() {
 		// Eliminamos el formato del número si el campo no esta vacio
+		regexNum = new RegExp(REGEX_NUMBERS);
 		const value = input.current.value;
 		if (value !== "") {
 			const newValue = value.replace(REGEX_NOT_NUMBERS, "");
 			input.current.value = newValue;
-			// setState({ ...state, value: newValue });
 		}
 	}
 
@@ -155,7 +157,6 @@ const InputOnlyNumbersFormat = ({
 			regexNum = new RegExp(REGEX_FORMAT_NUMBERS);
 			const newValue = FORMAT_NUMBER.format(value);
 			input.current.value = newValue;
-			// setState({ ...state, value: newValue });
 		}
 	}
 
