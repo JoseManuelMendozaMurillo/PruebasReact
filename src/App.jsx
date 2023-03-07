@@ -1,10 +1,10 @@
+import { useState } from "react";
 import styles from "./App.module.css";
 
 // Components
 import ButtonSearch from "./components/Buttons/ButtonSearch.jsx";
 import Label from "./components/Labels/Label.jsx";
-import InputOnlyNumbersFormat from "./components/Inputs/InputOnlyNumbers/InputOnlyNumbersFormat";
-import { useState } from "react";
+import InputDecimalNumbers from "./components/Inputs/InputOnlyDecimalNumbers/InputOnlyDecimalNumbers.jsx";
 
 const App = () => {
 	const [state, setState] = useState({ value: "", valid: null });
@@ -21,10 +21,9 @@ const App = () => {
 	 * @param void
 	 * @returns string | boolean
 	 */
-	const functionValidate = (edad) => {
-		edad = parseInt(edad);
-		if (edad < 0) return "La edad no puede ser menor que cero";
-		if (edad > 125) return "La edad no puede ser mayor a 125 años";
+	const functionValidate = (data) => {
+		data = parseFloat(data);
+		if (data > 456) return "Funcionando";
 		return true;
 	};
 
@@ -40,7 +39,7 @@ const App = () => {
 					>
 						Buscar pokemón
 					</Label>
-					<InputOnlyNumbersFormat
+					<InputDecimalNumbers
 						state={state}
 						setState={setState}
 						id="buscarPokemon"
@@ -52,10 +51,11 @@ const App = () => {
 						className={styles.inputs}
 						required={true}
 						maxCharacter={50}
+						maxDecimals={2}
 						functionValidate={functionValidate}
 					>
 						Nombre del pokemon
-					</InputOnlyNumbersFormat>
+					</InputDecimalNumbers>
 				</div>
 			</form>
 			<ButtonSearch onclick={() => SearchPokemon()}>Buscar</ButtonSearch>

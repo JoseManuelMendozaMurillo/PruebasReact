@@ -14,10 +14,6 @@ const InputOnlyNumbersFormat = ({
 	maxCharacter = 255,
 	functionValidate
 }) => {
-	/*
-		COSAS QUE FALTAN:
-			* Documentar las funciones
-	*/
 	const input = useRef(null);
 	const mnsjError = useRef(null);
 
@@ -66,21 +62,18 @@ const InputOnlyNumbersFormat = ({
 	/**
 	 * @function numbers
 	 *
-	 * @description Función para verificar si un caracter es un número y si no es un número ejecute la función
-	 * 				removeData. La función revisa que el parametro (data) cumpla con una expresión regular, la
-	 * 				cual esta hecha para aceptar solo números, si el parametro no cumple con la expresión regular
-	 * 				se ejecuta la función removeData y la función devuelve false si sí cumple, la función devolvera
-	 * 				true
+	 * @description Función para verificar si la entrada del input es un número. La función revisa que la entrada
+	 *              del input cumpla con una expresión regular, la cual esta hecha para aceptar solo números. si
+	 * 				el parametro no cumple con la expresión regular se ejecuta la función removeData y la función
+	 * 				devuelve false, si sí cumple, la función devolvera true
 	 * @param {string} data
 	 * @returns boolean
 	 */
 	function numbers(data) {
 		if (!regexNum.test(input.current.value)) {
 			removeData(data);
-			console.log("remove");
 			return false;
 		}
-		console.log("acept",input.current.value);
 		return true;
 	}
 

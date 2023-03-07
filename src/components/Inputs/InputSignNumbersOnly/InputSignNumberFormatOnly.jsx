@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import { useRef } from "react";
 import styles from "../InputText.module.css";
 
-const InputOnlyNumbers = ({
+const InputOnlyNumbersFormat = ({
 	state,
 	setState,
 	id,
@@ -17,7 +17,15 @@ const InputOnlyNumbers = ({
 	const input = useRef(null);
 	const mnsjError = useRef(null);
 
-	const REGEX_NUMBERS = /^[0-9]+$/g;
+	const REGEX_NOT_NUMBERS = /[^0-9-]/g;
+	const REGEX_NUMBERS = /^(-?[0-9]*)$/g;
+	const REGEX_FORMAT_NUMBERS = /[0-9,-]/g;
+	const FORMAT_NUMBER = new Intl.NumberFormat("ES-MX", {
+		minimumFractionDigits: 0,
+		maximumFractionDigits: 0
+	});
+
+	let regexNum = new RegExp(REGEX_NUMBERS);
 
 	/**
 	 * @function maxLength
@@ -54,16 +62,15 @@ const InputOnlyNumbers = ({
 	/**
 	 * @function numbers
 	 *
-	 * @description Función para verificar si un caracter es un número y si no es un número ejecute la función
-	 * 				removeData. La función revisa que el parametro (data) cumpla con una expresión regular, la
-	 * 				cual esta hecha para aceptar solo números, si el parametro no cumple con la expresión regular
-	 * 				se ejecuta la función removeData y la función devuelve false si sí cumple, la función devolvera
-	 * 				true
+	 * @description Función para verificar si la entrada del input es un número. La función revisa que la entrada
+	 *              del input cumpla con una expresión regular, la cual esta hecha para aceptar solo números
+	 *              (positivos o negativos). si el parametro no cumple con la expresión regular se ejecuta la
+	 *              función removeData y la función devuelve false, si sí cumple, la función devolvera true
 	 * @param {string} data
 	 * @returns boolean
 	 */
 	function numbers(data) {
-		if (!REGEX_NUMBERS.test(data)) {
+		if (!regexNum.test(input.current.value)) {
 			removeData(data);
 			return false;
 		}
@@ -126,9 +133,36 @@ const InputOnlyNumbers = ({
 		}
 	}
 
+	function onFocus() {
+		// Eliminamos el formato del número si el campo no esta vacio
+		regexNum = new RegExp(REGEX_NUMBERS);
+		const value = input.current.value;
+		if (value !== "") {
+			const newValue = value.replace(REGEX_NOT_NUMBERS, "");
+			input.current.value = newValue;
+		}
+	}
+
+	function onBlur() {
+		// Aplicamos formato al número si el campo no esta vacio
+		const value = input.current.value;
+		if (value !== "") {
+			regexNum = new RegExp(REGEX_FORMAT_NUMBERS);
+			const newValue = FORMAT_NUMBER.format(value);
+			input.current.value = newValue;
+		}
+	}
+
 	function onPaste(event) {
-		const data = event.nativeEvent.clipboardData.getData("text"); // Obtenemos el texto que se pego
-		if (!REGEX_NUMBERS.test(data)) {
+		// Obtenemos el texto que se pego
+		const dataPasted = event.nativeEvent.clipboardData.getData("text");
+
+		// Contruimos la cadena resultante de los datos pegados mas los datos que ya estaban en el input
+		const position = input.current.selectionStart;
+		const data =
+			state.value.slice(0, position) + dataPasted + state.value.slice(position);
+
+		if (!regexNum.test(data)) {
 			event.preventDefault();
 			console.error(
 				"El texto que se quiere pegar contiene caracteres que no son números"
@@ -159,9 +193,10 @@ const InputOnlyNumbers = ({
 					}
 					placeholder={children}
 					type="text"
-					value={state.value}
 					required={required}
 					onChange={(event) => onChange(event)}
+					onBlur={onBlur}
+					onFocus={onFocus}
 					onPaste={(event) => onPaste(event)}
 				/>
 				<label htmlFor={id}>
@@ -223,7 +258,7 @@ Icon.propTypes = {
 	onClick: PropTypes.func
 };
 
-InputOnlyNumbers.propTypes = {
+InputOnlyNumbersFormat.propTypes = {
 	state: PropTypes.object,
 	setState: PropTypes.func,
 	id: PropTypes.string,
@@ -236,4 +271,4 @@ InputOnlyNumbers.propTypes = {
 	functionValidate: PropTypes.func
 };
 
-export default InputOnlyNumbers;
+export default InputOnlyNumbersFormat;

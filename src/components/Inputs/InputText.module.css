@@ -1,11 +1,11 @@
-:root{
-    --color-valido: #32DB0C; 
-    --color-invalido: #bc2121; 
+:root {
+    --color-valido: #32DB0C;
+    --color-invalido: #bc2121;
     --color-secundario: #736d62;
 }
 
 
-.container{
+.container {
     width: 100%;
     display: flex;
     justify-content: center;
@@ -14,12 +14,12 @@
     gap: 0.5vh;
 }
 
-.containerInput{
+.containerInput {
     width: 100%;
     position: relative;
 }
 
-.inputs{
+.inputs {
     width: 100%;
     padding: 1vh 6vh 1vh 5.5vh;
 
@@ -33,68 +33,68 @@
     z-index: 0;
 }
 
-.inputs:focus{
+.inputs:focus {
     border: 0.33vh solid #fff;
     box-shadow: 0.1vh 0.1vh 2vh rgba(255, 255, 255, 0.4),
-                -0.1vh -0.1vh 2vh rgba(255, 255, 255, 0.4);
+        -0.1vh -0.1vh 2vh rgba(255, 255, 255, 0.4);
 }
 
 
-.valid{
+.valid {
     border: 0.33vh solid transparent;
 }
 
-.valid:focus{
+.valid:focus {
     border: 0.33vh solid var(--color-valido);
     box-shadow: 0.1vh 0.1vh 2vh rgba(50, 219, 12, 0.4),
-    -0.1vh -0.1vh 2vh rgba(50, 219, 12, 0.4);
+        -0.1vh -0.1vh 2vh rgba(50, 219, 12, 0.4);
 }
 
-.invalid{
+.invalid {
     border-color: var(--color-invalido);
 }
 
-.invalid:focus{
+.invalid:focus {
     border: 0.33vh solid var(--color-invalido);
     box-shadow: 0.1vh 0.1vh 2vh rgba(188, 33, 33, 0.4),
-    -0.1vh -0.1vh 2vh rgba(188, 33, 33, 0.4);
+        -0.1vh -0.1vh 2vh rgba(188, 33, 33, 0.4);
 }
 
-.icon{
+.icon {
     position: absolute;
-    
+
     width: 3.3vh;
     height: fit-content;
     z-index: 1;
 }
 
-.iconHelp{
+.iconHelp {
     bottom: 1.35vh;
     left: 1.4vh;
     fill: var(--color-secundario);
 }
 
-.inputs:focus + label .iconHelp{
+.inputs:focus+label .iconHelp {
     fill: #fff;
 }
 
-.iconFeedback{
+.iconFeedback {
     bottom: 1.35vh;
     right: 1.5vh;
     display: none;
 }
 
-.iconSuccess{
+.iconSuccess {
     fill: var(--color-valido);
     display: block;
 }
 
-.iconError{
+.iconError {
     fill: var(--color-invalido);
     display: block;
 }
 
-.feedback{
+.feedback {
     width: 100%;
     word-wrap: break-word;
     padding: 1vh 0.8vh;
@@ -103,10 +103,10 @@
     color: var(--color-secundario);
 }
 
-.feedbackSuccess{
+.feedbackSuccess {
     color: var(--color-valido);
 }
 
-.feedbackError{
+.feedbackError {
     color: var(--color-invalido);
 }
