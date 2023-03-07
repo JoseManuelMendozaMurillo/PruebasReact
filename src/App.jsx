@@ -4,7 +4,7 @@ import styles from "./App.module.css";
 // Components
 import ButtonSearch from "./components/Buttons/ButtonSearch.jsx";
 import Label from "./components/Labels/Label.jsx";
-import InputDecimalNumbers from "./components/Inputs/InputOnlyDecimalNumbers/InputOnlyDecimalNumbers.jsx";
+import InputDecimalNumbersFormat from "./components/Inputs/InputOnlyDecimalNumbers/InputOnlyDecimalNumbersFormat.jsx";
 
 const App = () => {
 	const [state, setState] = useState({ value: "", valid: null });
@@ -39,7 +39,7 @@ const App = () => {
 					>
 						Buscar pokemón
 					</Label>
-					<InputDecimalNumbers
+					<InputDecimalNumbersFormat
 						state={state}
 						setState={setState}
 						id="buscarPokemon"
@@ -55,7 +55,7 @@ const App = () => {
 						functionValidate={functionValidate}
 					>
 						Nombre del pokemon
-					</InputDecimalNumbers>
+					</InputDecimalNumbersFormat>
 				</div>
 			</form>
 			<ButtonSearch onclick={() => SearchPokemon()}>Buscar</ButtonSearch>
