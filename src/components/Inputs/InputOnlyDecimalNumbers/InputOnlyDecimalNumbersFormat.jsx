@@ -21,7 +21,6 @@ const InputDecimalNumbersFormat = ({
 
 	const REGEX_NOT_NUMBERS = /[^0-9\.]/g;
 	const REGEX_DECIMAL_NUMBERS = /^([0-9]*\.?[0-9]*)$/g;
-    const REGEX_FORMAT_NUMBERS = /[0-9,\.]/g;
 	const optionsFormat = {
 		minimumFractionDigits: alwaysApplyDecimalFormat ? maxDecimals : 0,
 		maximumFractionDigits: alwaysApplyDecimalFormat ? maxDecimals : 0,
@@ -73,7 +72,7 @@ const InputDecimalNumbersFormat = ({
 	 * @returns boolean
 	 */
 	function numbers(data) {
-		if (!regexNum.test(input.current.value)) {
+		if (!REGEX_DECIMAL_NUMBERS.test(input.current.value)) {
 			removeData(data);
 			return false;
 		}
@@ -102,8 +101,7 @@ const InputDecimalNumbersFormat = ({
 	 * @param void
 	 * @returns void
 	 */
-	function applyChangeState() {
-		const val = input.current.value;
+	function applyChangeState(val) {
 		if (val === "") {
 			setState({ value: "", valid: null });
 			return;
@@ -132,13 +130,12 @@ const InputDecimalNumbersFormat = ({
 		if (maxLength()) return;
 		const data = event.nativeEvent.data;
 		if (changeState(data)) {
-			applyChangeState();
+			applyChangeState(input.current.value);
 		}
 	}
 
 	function onFocus() {
 		// Eliminamos el formato del número si el campo no esta vacio
-		regexNum = new RegExp(REGEX_DECIMAL_NUMBERS);
 		const value = input.current.value;
 		if (value !== "") {
 			const newValue = value.replace(REGEX_NOT_NUMBERS, "");
@@ -150,9 +147,23 @@ const InputDecimalNumbersFormat = ({
 		// Aplicamos formato al número si el campo no esta vacio
 		const value = input.current.value;
 		if (value !== "") {
-			regexNum = new RegExp(REGEX_FORMAT_NUMBERS);
+			// Evaluamos si no esta activa la opción de aplicar siempre formato decimal
+			if (!alwaysApplyDecimalFormat) {
+				// Evaluamos si el número tiene parte decimal  para saber si aplicar o no el formato a los decimales
+				if (value.indexOf(".") === -1) {
+					// Sí el número no tiene parte decimal
+					optionsFormat.minimumFractionDigits = 0;
+					optionsFormat.maximumFractionDigits = 0;
+				} else {
+					// Sí el número si tiene parte decimal
+					optionsFormat.minimumFractionDigits = maxDecimals;
+					optionsFormat.maximumFractionDigits = maxDecimals;
+				}
+				FORMAT_NUMBER = new Intl.NumberFormat("ES-MX", optionsFormat);
+			}
 			const newValue = FORMAT_NUMBER.format(value);
 			input.current.value = newValue;
+			applyChangeState(newValue.replace(",",""));
 		}
 	}
 

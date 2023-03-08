@@ -18,14 +18,11 @@ const InputOnlyNumbersFormat = ({
 	const mnsjError = useRef(null);
 
 	const REGEX_NOT_NUMBERS = /[^0-9-]/g;
-	const REGEX_NUMBERS = /^(-?[0-9]*)$/g;
-	const REGEX_FORMAT_NUMBERS = /[0-9,-]/g;
+	const REGEX_SIGN_NUMBERS = /^(-?[0-9]*)$/g;
 	const FORMAT_NUMBER = new Intl.NumberFormat("ES-MX", {
 		minimumFractionDigits: 0,
 		maximumFractionDigits: 0
 	});
-
-	let regexNum = new RegExp(REGEX_NUMBERS);
 
 	/**
 	 * @function maxLength
@@ -70,7 +67,7 @@ const InputOnlyNumbersFormat = ({
 	 * @returns boolean
 	 */
 	function numbers(data) {
-		if (!regexNum.test(input.current.value)) {
+		if (!REGEX_SIGN_NUMBERS.test(input.current.value)) {
 			removeData(data);
 			return false;
 		}
@@ -135,7 +132,6 @@ const InputOnlyNumbersFormat = ({
 
 	function onFocus() {
 		// Eliminamos el formato del número si el campo no esta vacio
-		regexNum = new RegExp(REGEX_NUMBERS);
 		const value = input.current.value;
 		if (value !== "") {
 			const newValue = value.replace(REGEX_NOT_NUMBERS, "");
@@ -147,7 +143,6 @@ const InputOnlyNumbersFormat = ({
 		// Aplicamos formato al número si el campo no esta vacio
 		const value = input.current.value;
 		if (value !== "") {
-			regexNum = new RegExp(REGEX_FORMAT_NUMBERS);
 			const newValue = FORMAT_NUMBER.format(value);
 			input.current.value = newValue;
 		}
@@ -162,7 +157,7 @@ const InputOnlyNumbersFormat = ({
 		const data =
 			state.value.slice(0, position) + dataPasted + state.value.slice(position);
 
-		if (!regexNum.test(data)) {
+		if (!REGEX_SIGN_NUMBERS.test(data)) {
 			event.preventDefault();
 			console.error(
 				"El texto que se quiere pegar contiene caracteres que no son números"
