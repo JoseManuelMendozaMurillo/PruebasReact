@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import { useRef } from "react";
 import styles from "../InputText.module.css";
 
-const InputDecimalNumbersFormat = ({
+const InputSignDecimalNumbersFormat = ({
 	state,
 	setState,
 	id,
@@ -19,8 +19,8 @@ const InputDecimalNumbersFormat = ({
 	const input = useRef(null);
 	const mnsjError = useRef(null);
 
-	const REGEX_NOT_NUMBERS = /[^0-9\.]/g;
-	const REGEX_DECIMAL_NUMBERS = /^([0-9]*\.?[0-9]*)$/g;
+	const REGEX_NOT_NUMBERS = /[^0-9\.-]/g;
+	const REGEX_SIGN_DECIMAL_NUMBERS = /^(-?[0-9]*\.?[0-9]*)$/g;
 	const optionsFormat = {
 		minimumFractionDigits: alwaysApplyDecimalFormat ? maxDecimals : 0,
 		maximumFractionDigits: alwaysApplyDecimalFormat ? maxDecimals : 0,
@@ -71,7 +71,7 @@ const InputDecimalNumbersFormat = ({
 	 * @returns boolean
 	 */
 	function numbers(data) {
-		if (!REGEX_DECIMAL_NUMBERS.test(input.current.value)) {
+		if (!REGEX_SIGN_DECIMAL_NUMBERS.test(input.current.value)) {
 			removeData(data);
 			return false;
 		}
@@ -175,7 +175,7 @@ const InputDecimalNumbersFormat = ({
 		const data =
 			state.value.slice(0, position) + dataPasted + state.value.slice(position);
 
-		if (!REGEX_DECIMAL_NUMBERS.test(data)) {
+		if (!REGEX_SIGN_DECIMAL_NUMBERS.test(data)) {
 			event.preventDefault();
 			console.error(
 				"El texto que se quiere pegar contiene caracteres que no son números"
@@ -271,7 +271,7 @@ Icon.propTypes = {
 	onClick: PropTypes.func
 };
 
-InputDecimalNumbersFormat.propTypes = {
+InputSignDecimalNumbersFormat.propTypes = {
 	state: PropTypes.object,
 	setState: PropTypes.func,
 	id: PropTypes.string,
@@ -286,5 +286,5 @@ InputDecimalNumbersFormat.propTypes = {
 	functionValidate: PropTypes.func
 };
 
-export default InputDecimalNumbersFormat;
+export default InputSignDecimalNumbersFormat;
 

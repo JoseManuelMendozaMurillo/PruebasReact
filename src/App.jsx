@@ -4,7 +4,7 @@ import styles from "./App.module.css";
 // Components
 import ButtonSearch from "./components/Buttons/ButtonSearch.jsx";
 import Label from "./components/Labels/Label.jsx";
-import InputOnlyDecimalNumbersFormat from "./components/Inputs/InputOnlyDecimalNumbers/InputOnlyDecimalNumbersFormat.jsx";
+import InpuAlfanumeric from "./components/Inputs/InputsText/InputOnlyAlfanumeric.jsx";
 
 const App = () => {
 	const [state, setState] = useState({ value: "", valid: null });
@@ -22,8 +22,7 @@ const App = () => {
 	 * @returns string | boolean
 	 */
 	const functionValidate = (data) => {
-		data = parseFloat(data);
-		if (data > 456) return "Funcionando";
+		if (data === "Juan") return "Funcionando";
 		return true;
 	};
 
@@ -39,7 +38,7 @@ const App = () => {
 					>
 						Buscar pokemón
 					</Label>
-					<InputOnlyDecimalNumbersFormat
+					<InpuAlfanumeric
 						state={state}
 						setState={setState}
 						id="buscarPokemon"
@@ -51,11 +50,10 @@ const App = () => {
 						className={styles.inputs}
 						required={true}
 						maxCharacter={50}
-						maxDecimals={2}
 						functionValidate={functionValidate}
 					>
 						Nombre del pokemon
-					</InputOnlyDecimalNumbersFormat>
+					</InpuAlfanumeric>
 				</div>
 			</form>
 			<ButtonSearch onclick={() => SearchPokemon()}>Buscar</ButtonSearch>

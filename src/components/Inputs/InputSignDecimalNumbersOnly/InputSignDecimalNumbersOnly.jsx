@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import { useRef } from "react";
 import styles from "../InputText.module.css";
 
-const InputDecimalNumbersFormat = ({
+const InputSignDecimalNumbersOnly = ({
 	state,
 	setState,
 	id,
@@ -12,20 +12,19 @@ const InputDecimalNumbersFormat = ({
 	children = "",
 	required = false,
 	maxCharacter = 255,
-    maxDecimals = 2,
+	maxDecimals = 2,
 	alwaysApplyDecimalFormat = false,
 	functionValidate
 }) => {
 	const input = useRef(null);
 	const mnsjError = useRef(null);
 
-	const REGEX_NOT_NUMBERS = /[^0-9\.]/g;
-	const REGEX_DECIMAL_NUMBERS = /^([0-9]*\.?[0-9]*)$/g;
+	const REGEX_SIGN_DECIMAL_NUMBERS = /^(-?[0-9]*\.?[0-9]*)$/g;
 	const optionsFormat = {
 		minimumFractionDigits: alwaysApplyDecimalFormat ? maxDecimals : 0,
 		maximumFractionDigits: alwaysApplyDecimalFormat ? maxDecimals : 0,
+		useGrouping: false
 	};
-
 	let FORMAT_NUMBER = new Intl.NumberFormat("ES-MX", optionsFormat);
 
 	/**
@@ -65,13 +64,13 @@ const InputDecimalNumbersFormat = ({
 	 *
 	 * @description Función para verificar si la entrada del input es un número. La función revisa que la entrada
 	 *              del input cumpla con una expresión regular, la cual esta hecha para aceptar solo números
-	 *              (positivos o negativos). si el parametro no cumple con la expresión regular se ejecuta la
+	 *              (decimales o enteros). si el parametro no cumple con la expresión regular se ejecuta la
 	 *              función removeData y la función devuelve false, si sí cumple, la función devolvera true
 	 * @param {string} data
 	 * @returns boolean
 	 */
 	function numbers(data) {
-		if (!REGEX_DECIMAL_NUMBERS.test(input.current.value)) {
+		if (!REGEX_SIGN_DECIMAL_NUMBERS.test(input.current.value)) {
 			removeData(data);
 			return false;
 		}
@@ -100,7 +99,8 @@ const InputDecimalNumbersFormat = ({
 	 * @param void
 	 * @returns void
 	 */
-	function applyChangeState(val) {
+	function applyChangeState() {
+		const val = input.current.value;
 		if (val === "") {
 			setState({ value: "", valid: null });
 			return;
@@ -129,16 +129,7 @@ const InputDecimalNumbersFormat = ({
 		if (maxLength()) return;
 		const data = event.nativeEvent.data;
 		if (changeState(data)) {
-			applyChangeState(input.current.value);
-		}
-	}
-
-	function onFocus() {
-		// Eliminamos el formato del número si el campo no esta vacio
-		const value = input.current.value;
-		if (value !== "") {
-			const newValue = value.replace(REGEX_NOT_NUMBERS, "");
-			input.current.value = newValue;
+			applyChangeState();
 		}
 	}
 
@@ -162,7 +153,7 @@ const InputDecimalNumbersFormat = ({
 			}
 			const newValue = FORMAT_NUMBER.format(value);
 			input.current.value = newValue;
-			applyChangeState(newValue.replace(",",""));
+			applyChangeState();
 		}
 	}
 
@@ -175,10 +166,10 @@ const InputDecimalNumbersFormat = ({
 		const data =
 			state.value.slice(0, position) + dataPasted + state.value.slice(position);
 
-		if (!REGEX_DECIMAL_NUMBERS.test(data)) {
+		if (!REGEX_SIGN_DECIMAL_NUMBERS.test(data)) {
 			event.preventDefault();
 			console.error(
-				"El texto que se quiere pegar contiene caracteres que no son números"
+				"El texto que se quiere pegar no tiene el formato de un número"
 			);
 		}
 	}
@@ -206,10 +197,10 @@ const InputDecimalNumbersFormat = ({
 					}
 					placeholder={children}
 					type="text"
+					value={state.value}
 					required={required}
 					onChange={(event) => onChange(event)}
-					onBlur={onBlur}
-					onFocus={onFocus}
+					onBlur={() => onBlur()}
 					onPaste={(event) => onPaste(event)}
 				/>
 				<label htmlFor={id}>
@@ -271,7 +262,7 @@ Icon.propTypes = {
 	onClick: PropTypes.func
 };
 
-InputDecimalNumbersFormat.propTypes = {
+InputSignDecimalNumbersOnly.propTypes = {
 	state: PropTypes.object,
 	setState: PropTypes.func,
 	id: PropTypes.string,
@@ -281,10 +272,9 @@ InputDecimalNumbersFormat.propTypes = {
 	children: PropTypes.string,
 	required: PropTypes.bool,
 	maxCharacter: PropTypes.number,
-    maxDecimals: PropTypes.number,
-    alwaysApplyDecimalFormat: PropTypes.bool,
+	maxDecimals: PropTypes.number,
+	alwaysApplyDecimalFormat: PropTypes.bool,
 	functionValidate: PropTypes.func
 };
 
-export default InputDecimalNumbersFormat;
-
+export default InputSignDecimalNumbersOnly;
