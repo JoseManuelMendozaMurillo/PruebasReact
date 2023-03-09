@@ -12,7 +12,7 @@ const InputOnlyAlfanumeric = ({
 	children = "",
 	required = false,
 	maxCharacter = 255,
-	specialCharacter = [".", ".", "\\", ".", "@"],
+	specialCharacter = [".", ".", "\\", ".", "@", "[]", "w", "+}{", "Á"],
 	functionValidate
 }) => {
 	const input = useRef(null);
@@ -41,11 +41,14 @@ const InputOnlyAlfanumeric = ({
 			return;
 		}
 
-		// Limpiamos el array (limpiar tambien los caracteres que ya estan incluidos y las cadenas) )
+		// Limpiamos el array 
 		specialCharacter = specialCharacter.filter((elemento, indice) => {
-			console.log(elemento, indice);
-			return specialCharacter.indexOf(elemento) === indice;
+			return specialCharacter.indexOf(elemento) === indice && 
+				   elemento.length === 1 && 
+				   !REGEX_ALFANUMERIC.test(elemento);
 		});
+
+		console.log(specialCharacter.join(" "));
 
 		// En caso de que exista el caracter "\", lo "escapamos" para que funcione en la expresión regular
 		if (specialCharacter.includes("\\")) {
