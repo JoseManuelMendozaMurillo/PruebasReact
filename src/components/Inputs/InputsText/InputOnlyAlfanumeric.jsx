@@ -12,32 +12,54 @@ const InputOnlyAlfanumeric = ({
 	children = "",
 	required = false,
 	maxCharacter = 255,
-    specialCharacter = [],
+	specialCharacter = [".", ".", "\\", ".", "@"],
 	functionValidate
 }) => {
 	const input = useRef(null);
 	const mnsjError = useRef(null);
 
 	const REGEX_ALFANUMERIC = /^[A-ZÁÉÍÓÚÑa-záéíóúñ0-9\s]*$/g;
-    let regexNum = new RegExp(REGEX_ALFANUMERIC);
+	let regexNum;
 
-    constructRegex();
+	constructRegex();
 
-    /**
-     * @function constructRegex
-     * 
-     * @description PENDIENTE
-     * @param {void} void
-     * @returns {void} void
-     */
-    function constructRegex(){
-        if(specialCharacter.length === 0) return;
-        // 1. Quitar los elementos repetidos
-        // 2. Bucsar si en el arreglo existe el caracter "\"
-        // 3. Sí existe hacer que se "escape" para agregarlo
-        // 4. Sí no existe entonces agregar todos los caracteres al conjuento de caracteres validos
-        //    y crear el nuevo RegExp    
-    }
+	/**
+	 * @function constructRegex
+	 *
+	 * @description Función para construir una nueva expresión regular y admitir los caracteres que se hayan
+	 * 				definido en el array de caracteres especiales como caracteres validos para el input.
+	 * 				La función primero verifica si existen caracteres especiales, sí existen caracteres especiales
+	 * 				verifica que dichos caracteres no esten incluidos ya en la expresión regular inicial, si ya
+	 * 				estan incluidos, los elimina del array, si no estan incluidos los agregar a la expresión
+	 * 				regular para que sean admitidos por el input.
+	 * @param {void} void
+	 * @returns {void} void
+	 */
+	function constructRegex() {
+		if (specialCharacter.length === 0) {
+			regexNum = new RegExp(REGEX_ALFANUMERIC);
+			return;
+		}
+
+		// Limpiamos el array (limpiar tambien los caracteres que ya estan incluidos y las cadenas) )
+		specialCharacter = specialCharacter.filter((elemento, indice) => {
+			console.log(elemento, indice);
+			return specialCharacter.indexOf(elemento) === indice;
+		});
+
+		// En caso de que exista el caracter "\", lo "escapamos" para que funcione en la expresión regular
+		if (specialCharacter.includes("\\")) {
+			const indice = specialCharacter.indexOf("\\");
+			specialCharacter[indice] = "\\\\";
+		}
+
+		// Creamos la nueva expresión regular
+		const textRegex = REGEX_ALFANUMERIC.source;
+		const newValidCharacters = specialCharacter.join("");
+		const newRegex =
+			textRegex.slice(0, 25) + newValidCharacters + textRegex.slice(25);
+		regexNum = new RegExp(newRegex, "g");
+	}
 
 	/**
 	 * @function maxLength
@@ -83,7 +105,7 @@ const InputOnlyAlfanumeric = ({
 	 * @returns boolean
 	 */
 	function numbers(data) {
-		if (!REGEX_ALFANUMERIC.test(data)) {
+		if (!regexNum.test(data)) {
 			removeData(data);
 			return false;
 		}
@@ -148,7 +170,7 @@ const InputOnlyAlfanumeric = ({
 
 	function onPaste(event) {
 		const data = event.nativeEvent.clipboardData.getData("text"); // Obtenemos el texto que se pego
-		if (!REGEX_ALFANUMERIC.test(data)) {
+		if (!regexNum.test(data)) {
 			event.preventDefault();
 			console.error(
 				"El texto que se quiere pegar contiene caracteres que no son números"
@@ -253,7 +275,7 @@ InputOnlyAlfanumeric.propTypes = {
 	children: PropTypes.string,
 	required: PropTypes.bool,
 	maxCharacter: PropTypes.number,
-    specialCharacter: PropTypes.array,
+	specialCharacter: PropTypes.array,
 	functionValidate: PropTypes.func
 };
 
