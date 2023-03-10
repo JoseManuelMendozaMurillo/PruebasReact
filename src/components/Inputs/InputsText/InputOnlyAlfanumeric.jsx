@@ -1,4 +1,4 @@
-import PropTypes from "prop-types";
+import PropTypes, { element } from "prop-types";
 import { useRef } from "react";
 import styles from "../InputText.module.css";
 
@@ -12,13 +12,13 @@ const InputOnlyAlfanumeric = ({
 	children = "",
 	required = false,
 	maxCharacter = 255,
-	specialCharacter = [".", ".", "\\", ".", "@", "[]", "w", "+}{", "Á"],
+	specialCharacter = [],
 	functionValidate
 }) => {
 	const input = useRef(null);
 	const mnsjError = useRef(null);
 
-	const REGEX_ALFANUMERIC = /^[A-ZÁÉÍÓÚÑa-záéíóúñ0-9\s]*$/g;
+	const REGEX_ALFANUMERIC = /^[A-ZÁÉÍÓÚÑa-záéíóúñ0-9\s]*$/;
 	let regexNum;
 
 	constructRegex();
@@ -43,12 +43,10 @@ const InputOnlyAlfanumeric = ({
 
 		// Limpiamos el array 
 		specialCharacter = specialCharacter.filter((elemento, indice) => {
-			return specialCharacter.indexOf(elemento) === indice && 
+			return specialCharacter.indexOf(elemento) === indice &&  
 				   elemento.length === 1 && 
 				   !REGEX_ALFANUMERIC.test(elemento);
 		});
-
-		console.log(specialCharacter.join(" "));
 
 		// En caso de que exista el caracter "\", lo "escapamos" para que funcione en la expresión regular
 		if (specialCharacter.includes("\\")) {
@@ -61,7 +59,7 @@ const InputOnlyAlfanumeric = ({
 		const newValidCharacters = specialCharacter.join("");
 		const newRegex =
 			textRegex.slice(0, 25) + newValidCharacters + textRegex.slice(25);
-		regexNum = new RegExp(newRegex, "g");
+		regexNum = new RegExp(newRegex);
 	}
 
 	/**
